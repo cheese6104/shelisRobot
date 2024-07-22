@@ -13,7 +13,7 @@ import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
   private CANSparkFlex m_motor = new CANSparkFlex(Constants.Intake.motorId, MotorType.kBrushless);
-  /** Creates a new intake. */
+  
   public Intake() {
     m_motor.setInverted(true);
     m_motor.setSmartCurrentLimit(Constants.Intake.kCurrentLimit);

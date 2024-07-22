@@ -5,9 +5,13 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.CoolSetPower;
-import frc.robot.commands.DisableIntake;
+import frc.robot.Constants.shlong;
+import frc.robot.commands.intakeCommands.CoolSetPower;
+import frc.robot.commands.intakeCommands.DisableIntake;
+import frc.robot.commands.shlongCommands.DisableShlong;
+import frc.robot.commands.shlongCommands.ShlongSetPosition;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shlong;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 
@@ -23,11 +27,15 @@ public class RobotContainer {
       new CommandPS5Controller(OperatorConstants.kDriverControllerPort);
 
   private Intake m_intake = new Intake();
+  private Shlong m_shlongLeft = new Shlong(Constants.shlong.leftMotorId, true);
+  private Shlong m_shlongRight = new Shlong(Constants.shlong.rightMotorId, false);
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    m_driverController.circle().onTrue(new CoolSetPower(m_intake, 0.5));
-    m_driverController.square().onTrue(new CoolSetPower(m_intake, -0.5));
-    m_driverController.cross().onTrue(new DisableIntake(m_intake));
+    m_driverController.circle().onTrue(new DisableShlong(m_shlongLeft));
+    m_driverController.circle().onTrue(new DisableShlong(m_shlongRight));
+    m_driverController.square().onTrue(new ShlongSetPosition(m_shlongLeft, 0.15));
+    
   }
 
   /**

@@ -21,4 +21,18 @@ public final class Constants {
     public static final int motorId = 25;
     public static final int kCurrentLimit = 40;
   }
+
+  public static class shlong{
+    public static final int leftMotorId = 0;
+    public static final int rightMotorId = 0;
+    public static final float kSoftLimitForward = 50;
+    public static final float kSoftLimitReverse = -50;
+    public static final double SproketCircumfrence = 0.0398272 * Math.PI;
+    public static final double P = 0;
+    public static final double I = 0;
+    public static final double D = 0;
+  }
+
+  
+
 }
