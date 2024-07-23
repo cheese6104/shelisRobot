@@ -10,6 +10,8 @@ import frc.robot.commands.intakeCommands.CoolSetPower;
 import frc.robot.commands.intakeCommands.DisableIntake;
 import frc.robot.commands.shlongCommands.DisableShlong;
 import frc.robot.commands.shlongCommands.ShlongSetPosition;
+import frc.robot.commands.shlongCommands.ShlongSetState;
+import frc.robot.commands.shlongCommands.ShlongState;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shlong;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -32,10 +34,14 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    m_driverController.triangle().onTrue(new ShlongSetState(m_shlongLeft, ShlongState.OUT));
+    m_driverController.triangle().onTrue(new ShlongSetState(m_shlongRight, ShlongState.OUT));
+    m_driverController.cross().onTrue(new ShlongSetState(m_shlongLeft, ShlongState.IN));
+    m_driverController.cross().onTrue(new ShlongSetState(m_shlongRight, ShlongState.IN));
     m_driverController.circle().onTrue(new DisableShlong(m_shlongLeft));
     m_driverController.circle().onTrue(new DisableShlong(m_shlongRight));
     m_driverController.square().onTrue(new ShlongSetPosition(m_shlongLeft, 0.15));
-    
+    m_driverController.square().onTrue(new ShlongSetPosition(m_shlongRight, 0.20));
   }
 
   /**

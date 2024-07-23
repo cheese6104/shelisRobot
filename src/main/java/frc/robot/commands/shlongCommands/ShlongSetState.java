@@ -7,21 +7,20 @@ package frc.robot.commands.shlongCommands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.Shlong;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class ShlongSetPosition extends InstantCommand {
+public class ShlongSetState extends InstantCommand {
+  /** Creates a new ShlongSetState. */
   private Shlong m_shlong;
-  private double m_position;
-  public ShlongSetPosition(Shlong shlong, double position) {
+  private ShlongState m_state;
+  public ShlongSetState(Shlong shlong, ShlongState state) {
+    // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shlong);
     m_shlong = shlong;
-    m_position = position;
+    m_state = state;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_shlong.setPosition(m_position);
+    m_shlong.setPosition(m_state.getPosition());
   }
 }

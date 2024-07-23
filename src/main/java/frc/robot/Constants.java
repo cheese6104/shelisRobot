@@ -23,16 +23,33 @@ public final class Constants {
   }
 
   public static class shlong{
-    public static final int leftMotorId = 0;
-    public static final int rightMotorId = 0;
+    public static final int leftMotorId = 26;
+    public static final int rightMotorId = 27;
     public static final float kSoftLimitForward = 50;
     public static final float kSoftLimitReverse = -50;
     public static final double SproketCircumfrence = 0.0398272 * Math.PI;
-    public static final double P = 0;
+    public static final double P = 0.65;
     public static final double I = 0;
     public static final double D = 0;
   }
 
+  public static class Elevator{
+    public static final int MasterID = 0;
+    public static final int FollowerID = 0;
+    public static final double P = 0;
+    public static final double I = 0;
+    public static final double D = 0;
+    public static final double S = 0;
+    public static final double V = 0;
+    public static final double G = 0;
+    public static final boolean currentLimitEnbale = true;
+    public static final double CurrentLimits = 40;
+    public static final double CurrentLimitsThreshold = 60;
+    public static final double TimeThreshold = 0.1;
+    public static final boolean ForwardSoftLimitEnable = true;
+    public static final boolean ReverseSoftLimitEnable = false;
+    public static final boolean opposeMaster = false;
+  }
   
 
 }
