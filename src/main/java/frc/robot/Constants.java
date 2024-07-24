@@ -36,9 +36,9 @@ public final class Constants {
   public static class Elevator{
     public static final int MasterID = 5;
     public static final int FollowerID = 6;
-    public static final double P = 0.5;
-    public static final double I = 0;
-    public static final double D = 0;
+    public static final double P = 2.5;
+    public static final double I = 0.1;
+    public static final double D = 0.5;
     public static final double S = 0.05;
     public static final double V = 0;
     public static final double G = 0.12;
@@ -46,11 +46,30 @@ public final class Constants {
     public static final double CurrentLimits = 40;
     public static final double CurrentLimitsThreshold = 60;
     public static final double TimeThreshold = 0.1;
-    public static final boolean ForwardSoftLimitEnable = false;
-    public static final boolean ReverseSoftLimitEnable = false;
+    public static final boolean ForwardSoftLimitEnable = true;
+    public static final boolean ReverseSoftLimitEnable = true;
     public static final boolean opposeMaster = false;
-    public static final double ForwardSoftLimit = 0.6;
+    public static final double ForwardSoftLimit = 0.85;
     public static final double ReverseSoftLimit = 0.0;
+  }
+  
+  public static class Arm{
+    public static final int MasterID = 8;
+    public static final double P = 12;
+    public static final double I = 0;
+    public static final double D = 0;
+    public static final double S = 0;
+    public static final double V = 0;
+    public static final double G = 0.35;
+    public static final double CurrentLimits = 40;
+    public static final boolean currentLimitEnbale = true;
+    public static final double CurrentLimitsThreshold = 60;
+    public static final double TimeThreshold = 0.1;
+    public static final boolean ForwardSoftLimitEnable = true;
+    public static final boolean ReverseSoftLimitEnable = true;
+    public static final double ForwardSoftLimit = 127;
+    public static final double ReverseSoftLimit = -15;
+
   }
   
 

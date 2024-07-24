@@ -5,11 +5,17 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.ArmCommands.ArmSetState;
+import frc.robot.commands.ArmCommands.ArmState;
+import frc.robot.commands.ArmCommands.HomingArm;
+import frc.robot.commands.ArmCommands.ResetPositionArm;
 import frc.robot.commands.ElevatorCommands.ElevatorSetPower;
+import frc.robot.commands.ElevatorCommands.ElevatorSetState;
+import frc.robot.commands.ElevatorCommands.ElevatorState;
+import frc.robot.commands.ElevatorCommands.HomingElevator;
 import frc.robot.commands.ElevatorCommands.ResetPositionElevator;
 import frc.robot.commands.shlongCommands.DisableShlong;
-import frc.robot.commands.shlongCommands.ShlongSetState;
-import frc.robot.commands.shlongCommands.ShlongState;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shlong;
@@ -32,17 +38,21 @@ public class RobotContainer {
   private Shlong m_shlongLeft = new Shlong(Constants.shlong.leftMotorId, true);
   private Shlong m_shlongRight = new Shlong(Constants.shlong.rightMotorId, false);
   private Elevator m_elevator;
+  private Arm m_arm;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer(Elevator elevator) {
+  public RobotContainer(Elevator elevator, Arm arm) {
     m_elevator = elevator;
-    m_driverController.triangle().onTrue(new ShlongSetState(m_shlongLeft, ShlongState.OUT));
-    m_driverController.triangle().onTrue(new ShlongSetState(m_shlongRight, ShlongState.OUT));
-    m_driverController.circle().onTrue(new DisableShlong(m_shlongLeft));
-    m_driverController.circle().onTrue(new DisableShlong(m_shlongRight));
+    m_arm = arm;
     m_driverController.square().onTrue(new ElevatorSetPower(m_elevator, 0.1));
+    m_driverController.R2().onTrue(new ElevatorSetState(elevator, ElevatorState.def));
+    m_driverController.L2().onTrue(new ElevatorSetState(elevator, ElevatorState.floor));
+    m_driverController.cross().onTrue(new ArmSetState(m_arm, ArmState.in));
+    m_driverController.triangle().onTrue(new ArmSetState(m_arm, ArmState.floor));
+    m_driverController.circle().onTrue(new HomingElevator(m_elevator));
     // m_driverController.cross().onTrue(new ResetPositionElevator(elevator, 0));
     SmartDashboard.putData("Reset Elevator Position", new ResetPositionElevator(elevator, 0).ignoringDisable(true));
+    SmartDashboard.putData("Reset Arm Position", new ResetPositionArm(m_arm, 127).ignoringDisable(true));
   }
 
 

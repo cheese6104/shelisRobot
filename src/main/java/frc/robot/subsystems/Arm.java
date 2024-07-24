@@ -5,10 +5,10 @@
 package frc.robot.subsystems;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -18,71 +18,74 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class Elevator extends SubsystemBase {
-  private TalonFX m_motorMaster; 
-  private TalonFX m_motorFollower;
+public class Arm extends SubsystemBase {
+  /** Creates a new Arm. */
+  private TalonFX m_motorMaster;
   private TalonFXConfiguration configuration;
-  private DutyCycleOut m_DutyCycleOut;
   private PositionVoltage m_PositionVoltage;
+  private DutyCycleOut m_DutyCycleOut;
   private StatusSignal<Double> m_positionSignal;
 
-  public Elevator() {
-    m_motorMaster = new TalonFX(Constants.Elevator.MasterID);
+  public Arm() {
+    m_motorMaster = new TalonFX(Constants.Arm.MasterID);
     m_motorMaster.getConfigurator().apply(new TalonFXConfiguration());
-    m_motorFollower = new TalonFX(Constants.Elevator.FollowerID);
-    m_motorFollower.getConfigurator().apply(new TalonFXConfiguration());
 
-    m_DutyCycleOut = new DutyCycleOut(0);
     m_PositionVoltage = new PositionVoltage(0);
+    m_DutyCycleOut = new DutyCycleOut(0);
     configuration = new TalonFXConfiguration();
 
     m_positionSignal = m_motorMaster.getPosition();
 
     configuration.withCurrentLimits(new CurrentLimitsConfigs()
-    .withSupplyCurrentLimit(Constants.Elevator.CurrentLimits)
-    .withSupplyCurrentLimitEnable(Constants.Elevator.currentLimitEnbale) 
-    .withSupplyCurrentThreshold(Constants.Elevator.CurrentLimitsThreshold)
-    .withSupplyTimeThreshold(Constants.Elevator.TimeThreshold));
+    .withSupplyCurrentLimit(Constants.Arm.CurrentLimits)
+    .withSupplyCurrentLimitEnable(Constants.Arm.currentLimitEnbale) 
+    .withSupplyCurrentThreshold(Constants.Arm.CurrentLimitsThreshold)
+    .withSupplyTimeThreshold(Constants.Arm.TimeThreshold));
+
+    configuration.Feedback.withSensorToMechanismRatio(22.857);
 
     configuration.Slot0
-    .withKP(Constants.Elevator.P)
-    .withKI(Constants.Elevator.I)
-    .withKD(Constants.Elevator.D)
-    .withKS(Constants.Elevator.S)
-    .withKV(Constants.Elevator.V)
-    .withKG(Constants.Elevator.G)
-    .withGravityType(GravityTypeValue.Elevator_Static);
+    .withKP(Constants.Arm.P)
+    .withKI(Constants.Arm.I)
+    .withKD(Constants.Arm.D)
+    .withKS(Constants.Arm.S)
+    .withKV(Constants.Arm.V)
+    .withKG(Constants.Arm.G)
+    .withGravityType(GravityTypeValue.Arm_Cosine);
 
-    configuration.MotorOutput.withInverted(InvertedValue.Clockwise_Positive);
+    configuration.MotorOutput.withInverted(InvertedValue.CounterClockwise_Positive);
 
     configuration.withSoftwareLimitSwitch(new SoftwareLimitSwitchConfigs()
-    .withForwardSoftLimitEnable(Constants.Elevator.ForwardSoftLimitEnable)
-    .withForwardSoftLimitThreshold(UnitsToRotations(Constants.Elevator.ForwardSoftLimit))
-    .withReverseSoftLimitEnable(Constants.Elevator.ReverseSoftLimitEnable)
-    .withReverseSoftLimitThreshold(UnitsToRotations(Constants.Elevator.ReverseSoftLimit)));
-
-    configuration.Feedback.withSensorToMechanismRatio(12.1693121693);
-
-    m_motorFollower.setControl(new Follower(m_motorMaster.getDeviceID(), Constants.Elevator.opposeMaster)); 
+    .withForwardSoftLimitEnable(Constants.Arm.ForwardSoftLimitEnable)
+    .withForwardSoftLimitThreshold(UnitsToRotations(Constants.Arm.ForwardSoftLimit))
+    .withReverseSoftLimitEnable(Constants.Arm.ReverseSoftLimitEnable)
+    .withReverseSoftLimitThreshold(UnitsToRotations(Constants.Arm.ReverseSoftLimit)));
 
     m_motorMaster.getConfigurator().apply(configuration);
-    m_motorFollower.getConfigurator().apply(configuration);
-  }
 
+    // SmartDashboard.putBoolean("setPID", false);
+    // SmartDashboard.putNumber("Kp", 0);
+    // SmartDashboard.putNumber("Ki", 0);
+    // SmartDashboard.putNumber("Kd", 0);
+    // SmartDashboard.putNumber("Kg", 0);
+  }
+  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    // if(SmartDashboard.getBoolean("setPID", false)){
+    //   m_motorMaster.getConfigurator().apply(new Slot0Configs()
+    //   .withKP(SmartDashboard.getNumber("Kp", 0))
+    //   .withKI(SmartDashboard.getNumber("ki", 0))
+    //   .withKD(SmartDashboard.getNumber("Kp", 0))
+    //   .withKG(SmartDashboard.getNumber("Kg", 0)));
+    // }
     m_positionSignal.refresh();
-    SmartDashboard.putNumber("elevator Position", getPosition());
+    SmartDashboard.putNumber("arm Position", getPosition());
   }
-
-  public void setPower(double power){
-    m_motorMaster.setControl(m_DutyCycleOut.withOutput(power));
-    }
 
   public void disableMotors(){
     m_motorMaster.disable();
-    m_motorFollower.disable();
   }
 
   public void setPosition(double position){
@@ -94,25 +97,28 @@ public class Elevator extends SubsystemBase {
   }
 
   public void resetPosition(double position){
-    m_motorMaster.setPosition(position);
-    m_motorFollower.setPosition(position);
+    m_motorMaster.setPosition(UnitsToRotations(position));
   }
 
   private double RotationsToUnits(double rotation){
-    return rotation * 0.0363728 * Math.PI;
+    return rotation * 360;
   }
 
-  private double UnitsToRotations(double meter){
-    return meter / (0.0363728 * Math.PI);
+  private double UnitsToRotations(double angle){
+    return angle / 360;
   }
 
   public double getCurrent(){
     return m_motorMaster.getSupplyCurrent().getValueAsDouble();
   }
-  
+
   public void softLimitEnable(boolean enable){
     m_motorMaster.getConfigurator().apply(new SoftwareLimitSwitchConfigs()
     .withForwardSoftLimitEnable(enable)
     .withReverseSoftLimitEnable(enable));
+  }
+
+  public void setPower(double power) {
+    m_motorMaster.set(power);
   }
 }

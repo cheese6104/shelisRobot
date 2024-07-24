@@ -2,26 +2,26 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.ElevatorCommands;
+package frc.robot.commands.ArmCommands;
+
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Arm;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class ResetPositionElevator extends InstantCommand 
-{
-  private Elevator m_elevator;
-  private double m_position;
-  public ResetPositionElevator(Elevator elevator, double position) {
-    addRequirements(elevator);
-    m_elevator = elevator;
-    m_position = position;
+public class ArmSetState extends InstantCommand {
+  private Arm m_arm;
+  private ArmState m_state;
+  public ArmSetState(Arm arm, ArmState state) {
+    addRequirements(arm);
+    m_arm = arm;
+    m_state = state;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_elevator.resetPosition(m_position);
+    m_arm.setPosition(m_state.getPosition());
   }
 }
