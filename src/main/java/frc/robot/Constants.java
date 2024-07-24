@@ -51,6 +51,7 @@ public final class Constants {
     public static final boolean opposeMaster = false;
     public static final double ForwardSoftLimit = 0.85;
     public static final double ReverseSoftLimit = 0.0;
+    public static final double allowAbleError = 0.01;
   }
   
   public static class Arm{
@@ -69,6 +70,7 @@ public final class Constants {
     public static final boolean ReverseSoftLimitEnable = true;
     public static final double ForwardSoftLimit = 127;
     public static final double ReverseSoftLimit = -15;
+    public static final double allowAbleError = 1;
 
   }
   

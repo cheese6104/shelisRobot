@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
+
+  private static Intake m_instance = null;
   private CANSparkFlex m_motor = new CANSparkFlex(Constants.Intake.motorId, MotorType.kBrushless);
   
   public Intake() {
@@ -32,5 +34,12 @@ public class Intake extends SubsystemBase {
 
   public void disableMotor(){
     m_motor.disable();
+  }
+
+  public static Intake getInstance(){
+    if(m_instance == null){
+      return new Intake();
+    }
+    return m_instance;
   }
 }

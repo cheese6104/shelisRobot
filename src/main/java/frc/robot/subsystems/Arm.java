@@ -20,6 +20,9 @@ import frc.robot.Constants;
 
 public class Arm extends SubsystemBase {
   /** Creates a new Arm. */
+
+  private static Arm m_instance = null;
+
   private TalonFX m_motorMaster;
   private TalonFXConfiguration configuration;
   private PositionVoltage m_PositionVoltage;
@@ -120,5 +123,12 @@ public class Arm extends SubsystemBase {
 
   public void setPower(double power) {
     m_motorMaster.set(power);
+  }
+
+  public static Arm getInstance(){
+    if(m_instance == null){
+      return new Arm();
+    }
+    return m_instance;
   }
 }

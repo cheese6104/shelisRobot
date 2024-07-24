@@ -19,6 +19,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Elevator extends SubsystemBase {
+
+  private static Elevator m_instance = null;
+
   private TalonFX m_motorMaster; 
   private TalonFX m_motorFollower;
   private TalonFXConfiguration configuration;
@@ -26,7 +29,7 @@ public class Elevator extends SubsystemBase {
   private PositionVoltage m_PositionVoltage;
   private StatusSignal<Double> m_positionSignal;
 
-  public Elevator() {
+  private Elevator() {
     m_motorMaster = new TalonFX(Constants.Elevator.MasterID);
     m_motorMaster.getConfigurator().apply(new TalonFXConfiguration());
     m_motorFollower = new TalonFX(Constants.Elevator.FollowerID);
@@ -114,5 +117,12 @@ public class Elevator extends SubsystemBase {
     m_motorMaster.getConfigurator().apply(new SoftwareLimitSwitchConfigs()
     .withForwardSoftLimitEnable(enable)
     .withReverseSoftLimitEnable(enable));
+  }
+
+  public static Elevator getInstance(){
+    if(m_instance == null){
+      return new Elevator();
+    }
+    return m_instance;
   }
 }

@@ -18,6 +18,7 @@ import frc.robot.commands.shlongCommands.DisableShlong;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.RobotStateSubsystem;
 import frc.robot.subsystems.Shlong;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -34,24 +35,19 @@ public class RobotContainer {
   private final CommandPS5Controller m_driverController =
       new CommandPS5Controller(OperatorConstants.kDriverControllerPort);
 
-  private Intake m_intake = new Intake();
-  private Shlong m_shlongLeft = new Shlong(Constants.shlong.leftMotorId, true);
-  private Shlong m_shlongRight = new Shlong(Constants.shlong.rightMotorId, false);
-  private Elevator m_elevator;
-  private Arm m_arm;
-
+      RobotStateSubsystem robotStateSubsystem = new RobotStateSubsystem();
+      Elevator m_elevator = Elevator.getInstance();
+      Arm m_arm = Arm.getInstance();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer(Elevator elevator, Arm arm) {
-    m_elevator = elevator;
-    m_arm = arm;
+  public RobotContainer() {
     m_driverController.square().onTrue(new ElevatorSetPower(m_elevator, 0.1));
-    m_driverController.R2().onTrue(new ElevatorSetState(elevator, ElevatorState.def));
-    m_driverController.L2().onTrue(new ElevatorSetState(elevator, ElevatorState.floor));
+    m_driverController.R2().onTrue(new ElevatorSetState(m_elevator, ElevatorState.def));
+    m_driverController.L2().onTrue(new ElevatorSetState(m_elevator, ElevatorState.floor));
     m_driverController.cross().onTrue(new ArmSetState(m_arm, ArmState.in));
     m_driverController.triangle().onTrue(new ArmSetState(m_arm, ArmState.floor));
     m_driverController.circle().onTrue(new HomingElevator(m_elevator));
     // m_driverController.cross().onTrue(new ResetPositionElevator(elevator, 0));
-    SmartDashboard.putData("Reset Elevator Position", new ResetPositionElevator(elevator, 0).ignoringDisable(true));
+    SmartDashboard.putData("Reset Elevator Position", new ResetPositionElevator(m_elevator, 0).ignoringDisable(true));
     SmartDashboard.putData("Reset Arm Position", new ResetPositionArm(m_arm, 127).ignoringDisable(true));
   }
 
