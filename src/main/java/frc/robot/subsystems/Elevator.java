@@ -3,8 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
-import javax.swing.text.Position;
-
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -12,8 +11,10 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -22,13 +23,20 @@ public class Elevator extends SubsystemBase {
   private TalonFX m_motorFollower;
   private TalonFXConfiguration configuration;
   private DutyCycleOut m_DutyCycleOut;
+  private PositionVoltage m_PositionVoltage;
+  private StatusSignal<Double> m_positionSignal;
 
   public Elevator() {
     m_motorMaster = new TalonFX(Constants.Elevator.MasterID);
+    m_motorMaster.getConfigurator().apply(new TalonFXConfiguration());
     m_motorFollower = new TalonFX(Constants.Elevator.FollowerID);
+    m_motorFollower.getConfigurator().apply(new TalonFXConfiguration());
 
     m_DutyCycleOut = new DutyCycleOut(0);
+    m_PositionVoltage = new PositionVoltage(0);
     configuration = new TalonFXConfiguration();
+
+    m_positionSignal = m_motorMaster.getPosition();
 
     configuration.withCurrentLimits(new CurrentLimitsConfigs()
     .withSupplyCurrentLimit(Constants.Elevator.CurrentLimits)
@@ -43,15 +51,17 @@ public class Elevator extends SubsystemBase {
     .withKS(Constants.Elevator.S)
     .withKV(Constants.Elevator.V)
     .withKG(Constants.Elevator.G)
-    .withGravityType(null);
+    .withGravityType(GravityTypeValue.Elevator_Static);
 
-    configuration.MotorOutput.withInverted(InvertedValue.CounterClockwise_Positive);
+    configuration.MotorOutput.withInverted(InvertedValue.Clockwise_Positive);
 
     configuration.withSoftwareLimitSwitch(new SoftwareLimitSwitchConfigs()
     .withForwardSoftLimitEnable(Constants.Elevator.ForwardSoftLimitEnable)
-    .withForwardSoftLimitThreshold(Constants.Elevator.TimeThreshold)
+    .withForwardSoftLimitThreshold(Constants.Elevator.ForwardSoftLimit)
     .withReverseSoftLimitEnable(Constants.Elevator.ReverseSoftLimitEnable)
-    .withReverseSoftLimitThreshold(Constants.Elevator.TimeThreshold));
+    .withReverseSoftLimitThreshold(Constants.Elevator.ReverseSoftLimit));
+
+    configuration.Feedback.withSensorToMechanismRatio(12.1693121693);
 
     m_motorFollower.setControl(new Follower(m_motorMaster.getDeviceID(), Constants.Elevator.opposeMaster)); 
 
@@ -62,6 +72,8 @@ public class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    m_positionSignal.refresh();
+    SmartDashboard.putNumber("elevator Position", getPosition());
   }
 
   public void setPower(double power){
@@ -73,10 +85,24 @@ public class Elevator extends SubsystemBase {
     m_motorFollower.disable();
   }
 
-  public void setPosition(double position){
-     m_motorMaster.setControl(new PositionVoltage(position));
+  public void setPosition(){
+     m_motorMaster.setControl(m_PositionVoltage.withPosition(UnitsToRotations(getPosition())));
   }
 
+  public double getPosition(){
+    return RotationsToUnits(m_positionSignal.getValueAsDouble());
+  }
 
+  public void resetPosition(double position){
+    m_motorMaster.setPosition(position);
+    m_motorFollower.setPosition(position);
+  }
 
+  private double RotationsToUnits(double rotation){
+    return rotation * 0.0363728 * Math.PI;
+  }
+
+  private double UnitsToRotations(double meter){
+    return meter / (0.0363728 * Math.PI);
+  }
 }
